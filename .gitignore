@@ -1,2 +1,4 @@
 temp/
 .DS_Store
+ump_*
+!ump_*.c
