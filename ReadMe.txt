@@ -36,3 +36,15 @@ ump介绍
 	用法1: ump_24 a b c d(a, b, c, d表示4个整数)
 	用法2: ump_24, 然后再输入a b c d(a, b, c, d表示4个整数)
 	该文件用来算24点。
+
+
+注: 若提示没有文件，则需:
+gcc program/ump.c -o ump -O3 -std=c99
+gcc program/ump_24.c -o ump_24 -O3 -std=c99
+gcc program/ump_ccsie.c -o ump_ccsie -O3 -std=c99
+gcc program/ump_dls.c -o ump_dls -O3 -std=c99
+gcc program/ump_drls.c -o ump_drls -O3 -std=c99
+gcc program/ump_drs.c -o ump_drs -O3 -std=c99
+gcc program/ump_jm.c -o ump_jm -O3 -std=c99
+gcc program/ump_mw.c -o ump_mw -O3 -std=c99
+gcc program/ump_sudoku.c -o ump_sudoku -O3 -std=c99
