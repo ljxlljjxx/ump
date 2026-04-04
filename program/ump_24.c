@@ -102,10 +102,10 @@ const Number n_24 = {
 
 const Number *n_24p = &n_24;
 
-double op_l[] = {INFINITY, 1.1, 1.1, 2.1, 2.1};
-double op_r[] = {INFINITY, 1.0, 1.0, 2.0, 2.0};
+double op_l[] = {INFINITY, 1.0, 1.0, 2.0, 2.0};
+double op_r[] = {INFINITY, 1.0, 1.1, 2.0, 2.1};
 const string op_str[] = {
-    {1, ""},
+    {4, "???"},
     {4, " + "},
     {4, " - "},
     {4, " * "},
@@ -192,10 +192,10 @@ int nr_equal(Number *a, ResultType *b)
     return result_equal(&a->result, b);
 }
 
-_Number _number_init1(Number *a)
+_Number _number_init1(const Number *a)
 {
     _Number ans;
-    ans.number = a;
+    ans.number = (Number *)a;
     return ans;
 }
 
@@ -206,7 +206,7 @@ _Number _number_init2(BasicType a)
     return ans;
 }
 
-Number number_calculate(Number *a, Number *b, int op)
+Number number_calculate(const Number *a, const Number *b, int op)
 {
     Number ans;
     ans.first = _number_init1(a);
@@ -231,29 +231,36 @@ string number_print(Number *n)
     string a, b;
     a = number_print(n->first.number);
     if (op_r[aop] < op_l[n->op]) add_bracket(&a);
-    b = number_print(n->first.number);
-    if (op_r[n->op] < op_l[bop]) add_bracket(&b);
+    b = number_print(n->second.number);
+    if (op_r[n->op] > op_l[bop]) add_bracket(&b);
     ans = string_add(&a, op_str + n->op);
     ans = string_add(&ans, &b);
     return ans;
 }
 
-void debug_number_output(Number *a)
+void debug_number_output(const Number *a, int deep)
 {
-    printf("first: %p; ", a->first.number);
-    printf("second: %p; ", a->second.number);
-    printf("op: %d; ", a->op);
-    printf("result: %lf\n", a->result.value);
+    if (a->op == 0)
+    {
+        for (int i = 0; i < deep; i++) putchar(9); printf("op: 0; first: %d\n", a->first.basic);
+        for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
+        return;
+    }
+    for (int i = 0; i < deep; i++) putchar(9); printf("first: %p;\n", a->first.number);
+    debug_number_output(a->first.number, deep + 1);
+    for (int i = 0; i < deep; i++) putchar(9); printf("second: %p;\n", a->second.number);
+    debug_number_output(a->second.number, deep + 1);
+    for (int i = 0; i < deep; i++) putchar(9); printf("op: %d;\n", a->op);
+    for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
 }
 
-int ckeck2(Number *a, Number *b)
+int ckeck2(const Number *a, const Number *b)
 {
     int ans = 0;
     Number s;
     for (int i = 1; i <= 4; i++)
     {
         s = number_calculate(a, b, i);
-        debug_number_output(&s);
         if (number_equal(&s, n_24p))
         {
             string_ans[ans_cnt++] = number_print(&s);
@@ -263,7 +270,7 @@ int ckeck2(Number *a, Number *b)
     return ans;
 }
 
-int check3(Number *a, Number *b, Number *c)
+int check3(const Number *a, const Number *b, const Number *c)
 {
     int ans = 0;
     Number s;
@@ -276,7 +283,7 @@ int check3(Number *a, Number *b, Number *c)
     return ans;
 }
 
-int check4(Number *a, Number *b, Number *c, Number *d)
+int check4(const Number *a, const Number *b, const Number *c, const Number *d)
 {
     int ans = 0;
     Number s;
@@ -311,6 +318,11 @@ int main(int argc, char **argv)
         number_read_stdout(&c);
         number_read_stdout(&d);
     }
+
+    number_update(&a); printf("a: %p\n", &a);
+    number_update(&b); printf("b: %p\n", &b);
+    number_update(&c); printf("c: %p\n", &c);
+    number_update(&d); printf("d: %p\n", &d);
 
     check4(&a, &b, &c, &d);
     check4(&a, &b, &d, &c);
