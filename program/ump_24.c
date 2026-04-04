@@ -215,8 +215,10 @@ int number_update(Number *n)
         n->result.value =  n->first.number->result.value;
         if (n->second.number->result.value)
             n->result.value /= n->second.number->result.value;
-        else
+        else if (n->first.number->result.value)
             n->result.value = INFINITY;
+        else
+            n->result.value = NAN;
         break;
     
     default:
