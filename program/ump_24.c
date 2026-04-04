@@ -9,7 +9,8 @@ typedef struct ResultType ResultType;
 struct Number;
 typedef struct Number Number;
 typedef int BasicType;
-int number_update(Number *n);
+int number_update(Number *);
+void debug_number_output(const Number *, int);
 typedef union _Number
 {
     Number *number;
@@ -70,6 +71,15 @@ void add_bracket(string *str)
     }
 }
 
+void string_resize(string *a)
+{
+    size_t len = strlen(a->buf);
+    for (; a->buf[len] == 32; len--);
+    a->size = len + 1;
+    a->buf = realloc(a->buf, a->size * sizeof(char));
+    a->buf[len] = 0;
+}
+
 struct ResultType
 {
     double value;
@@ -115,6 +125,9 @@ const string op_str[] = {
 string string_ans[10000];
 size_t ans_cnt;
 
+string *__string_ans[10000];
+size_t __ans_cnt;
+
 void number_read_charp(Number *n, char *s)
 {
     sscanf(s, "%d", &n->first.basic);
@@ -132,17 +145,42 @@ int _number_update(_Number *n)
     return number_update(n->number);
 }
 
+int number_same(Number *a, Number *b)
+{
+    return a->op == b->op && a->first.basic == b->first.basic && a->second.basic == b->second.basic;
+}
+
+int number_compare(const void *_a, const void *_b)
+{
+    const Number *a = (const Number *)_a;
+    const Number *b = (const Number *)_b;
+    if (b->op == 0 && a->op == 0) return a->first.basic < b->first.basic;
+    if (b->op == 0) return 1;
+    if (a->op == 0) return 0;
+    if (b->op != a->op) return a->op < b->op;
+    if (!number_same(a->first.number, b->first.number)) return number_compare(a->first.number, b->first.number);
+    if (!number_same(a->second.number, b->second.number)) return number_compare(a->second.number, b->second.number);
+    return 0;
+}
+
 int number_update(Number *n)
 {
+    if (!n->op)
+    {
+        n->result.value = n->first.basic;
+        return 0;
+    }
     switch (n->op)
     {
-    case 0:
-        n->result.value = n->first.basic;
-        break;
-
     case 1:
         _number_update(&n->first);
         _number_update(&n->second);
+        if (!number_compare(n->first.number, n->second.number))
+        {
+            Number *t = n->first.number;
+            n->first.number = n->second.number;
+            n->second.number = t;
+        }
         n->result.value =  n->first.number->result.value;
         n->result.value += n->second.number->result.value;
         break;
@@ -254,6 +292,17 @@ void debug_number_output(const Number *a, int deep)
     for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
 }
 
+int string_cmp(const void *_a, const void *_b)
+{
+    const string *a = (const string *)_a;
+    const string *b = (const string *)_b;
+    const char *abuf = a->buf;
+    const char *bbuf = b->buf;
+
+    if (a->size != b->size) return (a->size > b->size) * 2 - 1;
+    return strcmp(abuf, bbuf);
+}
+
 int ckeck2(const Number *a, const Number *b)
 {
     int ans = 0;
@@ -263,7 +312,9 @@ int ckeck2(const Number *a, const Number *b)
         s = number_calculate(a, b, i);
         if (number_equal(&s, n_24p))
         {
-            string_ans[ans_cnt++] = number_print(&s);
+            string_ans[ans_cnt] = number_print(&s);
+            string_resize(ans_cnt + string_ans);
+            ans_cnt++;
             ans++;
         }
     }
@@ -302,7 +353,6 @@ int check4(const Number *a, const Number *b, const Number *c, const Number *d)
 
 int main(int argc, char **argv)
 {
-    freopen("ump_24.txt", "w", stdout);
     Number a, b, c, d;
     if (argc == 5)
     {
@@ -318,11 +368,6 @@ int main(int argc, char **argv)
         number_read_stdout(&c);
         number_read_stdout(&d);
     }
-
-    number_update(&a); printf("a: %p\n", &a);
-    number_update(&b); printf("b: %p\n", &b);
-    number_update(&c); printf("c: %p\n", &c);
-    number_update(&d); printf("d: %p\n", &d);
 
     check4(&a, &b, &c, &d);
     check4(&a, &b, &d, &c);
@@ -349,9 +394,30 @@ int main(int argc, char **argv)
     check4(&d, &c, &a, &b);
     check4(&d, &c, &b, &a);
 
-    for (int i = 0; i < ans_cnt; i++)
+
+    if (ans_cnt == 0)
     {
-        puts(string_ans[i].buf);
+        puts("No Solutions!");
+        return 0;
+    }
+
+    qsort(string_ans, ans_cnt, sizeof(*string_ans), string_cmp);
+
+    __string_ans[__ans_cnt++] = &string_ans[0];
+    for (int i = 1; i < ans_cnt; i++)
+    {
+        if (strcmp(string_ans[i-1].buf, string_ans[i].buf))
+            __string_ans[__ans_cnt++] = &string_ans[i];
+    }
+
+    if (__ans_cnt == 1)
+        puts("There are a total of 1 solution, as follows:");
+    else
+        printf("There are a total of %zd solutions, as follows:\n", __ans_cnt);
+
+    for (int i = 0; i < __ans_cnt; i++)
+    {
+        puts(__string_ans[i]->buf);
     }
     return 0;
 }
