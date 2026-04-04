@@ -195,6 +195,12 @@ int number_update(Number *n)
     case 3:
         _number_update(&n->first);
         _number_update(&n->second);
+        if (!number_compare(n->first.number, n->second.number))
+        {
+            Number *t = n->first.number;
+            n->first.number = n->second.number;
+            n->second.number = t;
+        }
         n->result.value =  n->first.number->result.value;
         n->result.value *= n->second.number->result.value;
         break;
