@@ -9,22 +9,22 @@ typedef struct ResultType ResultType;
 struct Number;
 typedef struct Number Number;
 typedef int BasicType;
-int number_update(Number *);
-void debug_number_output(const Number *, int);
 typedef union _Number
 {
     Number *number;
     BasicType basic;
 } _Number;
-
 typedef struct string
 {
     size_t size;
     char *buf;
 } string;
+int number_update(Number *);
+void debug_number_output(const Number *, int);
+int debug_string_check(const string *);
+void debug_string_output(const string *);
 
 const string space = {2, " "};
-
 size_t string_length(const string *str)
 {
     return strlen(str->buf) + 1;
@@ -44,6 +44,7 @@ string string_add(const string *str1, const string *str2)
     ans.buf = (char *)malloc(sizeof(char) * ans.size);
     strcpy(ans.buf, str1->buf);
     strcat(ans.buf, str2->buf);
+    assert(debug_string_check(&ans));
     return ans;
 }
 
@@ -58,16 +59,19 @@ void add_bracket(string *str)
         }
         str->buf[0] = '(';
         str->buf[len] = ')';
+        assert(debug_string_check(str));
     }
     else
     {
         str->size = len + 2;
         char *new_buf = (char *)malloc(sizeof(char) * str->size);
-        strcpy(new_buf + 1, str->buf);
+        for (int i = 0; i < len-1; i++) new_buf[i+1] = str->buf[i];
         free(str->buf);
         new_buf[0] = '(';
         new_buf[len] = ')';
+        new_buf[len+1] = 0;
         str->buf = new_buf;
+        assert(debug_string_check(str));
     }
 }
 
@@ -296,6 +300,18 @@ void debug_number_output(const Number *a, int deep)
     debug_number_output(a->second.number, deep + 1);
     for (int i = 0; i < deep; i++) putchar(9); printf("op: %d;\n", a->op);
     for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
+}
+
+void debug_string_output(const string *str)
+{
+    printf("adr: %p; size: %zd; '%s'\n", str, str->size, str->buf);
+}
+
+int debug_string_check(const string *str)
+{
+    if (string_length(str) <= str->size) return 1;
+    debug_string_output(str);
+    return 0;
 }
 
 int string_cmp(const void *_a, const void *_b)
