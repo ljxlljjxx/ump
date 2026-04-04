@@ -24,17 +24,22 @@ typedef struct string
 
 const string space = {2, " "};
 
+size_t string_length(const string *str)
+{
+    return strlen(str->buf) + 1;
+}
+
 void string_init(string *str, const char *s)
 {
-    str->size = strlen(s);
-    str->buf = (char *)malloc(sizeof(char) * (str->size + 5));
+    str->size = strlen(s) + 5;
+    str->buf = (char *)malloc(sizeof(char) * str->size);
     strcpy(str->buf, s);
 }
 
 string string_add(const string *str1, const string *str2)
 {
     string ans;
-    ans.size = str1->size + str2->size;
+    ans.size = string_length(str1) + string_length(str2);
     ans.buf = (char *)malloc(sizeof(char) * ans.size);
     strcpy(ans.buf, str1->buf);
     strcat(ans.buf, str2->buf);
@@ -43,24 +48,24 @@ string string_add(const string *str1, const string *str2)
 
 void add_bracket(string *str)
 {
-    size_t real_size = strlen(str->buf) + 1;
-    if (real_size <= str->size - 2)
+    size_t len = string_length(str);
+    if (len <= str->size - 2)
     {
-        for (int i = 0; i < real_size; i++)
+        for (int i = len-2; i >= 0; i--)
         {
             str->buf[i+1] = str->buf[i];
         }
         str->buf[0] = '(';
-        str->buf[real_size+1] = ')';
+        str->buf[len] = ')';
     }
     else
     {
-        str->size = real_size + 2;
+        str->size = len + 2;
         char *new_buf = (char *)malloc(sizeof(char) * str->size);
         strcpy(new_buf + 1, str->buf);
         free(str->buf);
         new_buf[0] = '(';
-        new_buf[real_size+1] = ')';
+        new_buf[len] = ')';
         str->buf = new_buf;
     }
 }
@@ -110,7 +115,13 @@ const string op_str[] = {
 string string_ans[10000];
 size_t ans_cnt;
 
-void number_read(Number *n)
+void number_read_charp(Number *n, char *s)
+{
+    sscanf(s, "%d", &n->first.basic);
+    n->op = 0;
+}
+
+void number_read_stdout(Number *n)
 {
     scanf("%d", &n->first.basic);
     n->op = 0;
@@ -227,6 +238,14 @@ string number_print(Number *n)
     return ans;
 }
 
+void debug_number_output(Number *a)
+{
+    printf("first: %p; ", a->first.number);
+    printf("second: %p; ", a->second.number);
+    printf("op: %d; ", a->op);
+    printf("result: %lf\n", a->result.value);
+}
+
 int ckeck2(Number *a, Number *b)
 {
     int ans = 0;
@@ -234,6 +253,7 @@ int ckeck2(Number *a, Number *b)
     for (int i = 1; i <= 4; i++)
     {
         s = number_calculate(a, b, i);
+        debug_number_output(&s);
         if (number_equal(&s, n_24p))
         {
             string_ans[ans_cnt++] = number_print(&s);
@@ -273,13 +293,24 @@ int check4(Number *a, Number *b, Number *c, Number *d)
     return ans;
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    freopen("ump_24.txt", "w", stdout);
     Number a, b, c, d;
-    number_read(&a);
-    number_read(&b);
-    number_read(&c);
-    number_read(&d);
+    if (argc == 5)
+    {
+        number_read_charp(&a, argv[1]);
+        number_read_charp(&b, argv[2]);
+        number_read_charp(&c, argv[3]);
+        number_read_charp(&d, argv[4]);
+    }
+    else
+    {
+        number_read_stdout(&a);
+        number_read_stdout(&b);
+        number_read_stdout(&c);
+        number_read_stdout(&d);
+    }
 
     check4(&a, &b, &c, &d);
     check4(&a, &b, &d, &c);
