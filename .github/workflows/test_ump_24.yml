@@ -28,7 +28,7 @@ jobs:
           for ((i=1; i<=20; i++)); do
             input="test/test_ump_24/${i}.in"
             expected="test/test_ump_24/${i}.out"
-            if ump_24_ubuntu < "$input" | cmp -s - "$expected"; then
+            if ./ump_24_ubuntu < "$input" | cmp -s - "$expected"; then
               echo "test ${i} accepted"
             else
               echo "test ${i} unaccepted"
@@ -48,7 +48,7 @@ jobs:
             for ((i=1; i<=20; i++)); do
               input="test/test_ump_24/${i}.in"
               expected="test/test_ump_24/${i}.out"
-              if ump_24_macos < "$input" | cmp -s - "$expected"; then
+              if ./ump_24_macos < "$input" | cmp -s - "$expected"; then
                 echo "test ${i} accepted"
               else
                 echo "test ${i} unaccepted"
