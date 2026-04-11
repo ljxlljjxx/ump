@@ -151,20 +151,21 @@ int _number_update(_Number *n)
 
 int number_same(Number *a, Number *b)
 {
-    return a->op == b->op && a->first.basic == b->first.basic && a->second.basic == b->second.basic;
+    if (a->op == 0) return b->op == 0 && a->first.basic == b->first.basic;
+    return a->op == b->op && number_same(a->first.number, b->first.number) && number_same(a->second.number, b->second.number);
 }
 
 int number_compare(const void *_a, const void *_b)
 {
     const Number *a = (const Number *)_a;
     const Number *b = (const Number *)_b;
-    if (b->op == 0 && a->op == 0) return a->first.basic < b->first.basic;
+    if (b->op == 0 && a->op == 0) return a->first.basic <= b->first.basic;
     if (b->op == 0) return 1;
     if (a->op == 0) return 0;
     if (b->op != a->op) return a->op < b->op;
     if (!number_same(a->first.number, b->first.number)) return number_compare(a->first.number, b->first.number);
     if (!number_same(a->second.number, b->second.number)) return number_compare(a->second.number, b->second.number);
-    return 0;
+    return 1;
 }
 
 int number_update(Number *n)
@@ -181,6 +182,9 @@ int number_update(Number *n)
         _number_update(&n->second);
         if (!number_compare(n->first.number, n->second.number))
         {
+            debug_number_output(n->first.number, 0);
+            debug_number_output(n->second.number, 0);
+            puts("!!!!change!!!!");
             Number *t = n->first.number;
             n->first.number = n->second.number;
             n->second.number = t;
@@ -330,6 +334,7 @@ int string_cmp(const void *_a, const void *_b)
 #define _check2(a, b, i) s = number_calculate(a, b, i); \
         if (number_equal(&s, n_24p)) \
         { \
+            debug_number_output(&s, 0);\
             string_ans[ans_cnt] = number_print(&s); \
             string_resize(ans_cnt + string_ans); \
             ans_cnt++; \
