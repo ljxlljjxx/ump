@@ -74,6 +74,7 @@ jobs:
             if ($actualOutput -eq $expectedOutput) {
               Write-Host "test $i accepted"
             } else {
+              Write-Host "$actualOutput"
               Write-Host "test $i unaccepted"
               exit 1
             }
