@@ -52,6 +52,7 @@ jobs:
                 echo "test ${i} accepted"
               else
                 echo "test ${i} unaccepted"
+                echo $(./ump_24_macos < "$input")
                 exit 1
               fi
             done
@@ -68,7 +69,7 @@ jobs:
           for ($i = 1; $i -le 20; $i++) {
             $inputFile  = "test\test_ump_24\$i.in"
             $expectedFile = "test\test_ump_24\$i.out"
-            $actualOutput = Get-Content $inputFile -Raw | & ump_24_windows
+            $actualOutput = Get-Content $inputFile -Raw | & ./ump_24_windows
             $expectedOutput = Get-Content $expectedFile -Raw
             if ($actualOutput -eq $expectedOutput) {
               Write-Host "test $i accepted"
