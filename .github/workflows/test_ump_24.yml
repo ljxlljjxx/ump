@@ -1,4 +1,4 @@
-name: test walawala.c
+name: test ump_24.c
 run-name: test1 triggered bt ${{ github.actor }}
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
