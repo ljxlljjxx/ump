@@ -52,7 +52,7 @@ jobs:
                 echo "test ${i} accepted"
               else
                 echo "test ${i} unaccepted"
-                echo $(./ump_24_macos < "$input")
+                echo "$(./ump_24_macos < "$input")"
                 exit 1
               fi
             done
