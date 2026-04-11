@@ -327,52 +327,50 @@ int string_cmp(const void *_a, const void *_b)
     return strcmp(abuf, bbuf);
 }
 
-int ckeck2(const Number *a, const Number *b)
-{
-    int ans = 0;
-    Number s;
-    for (int i = 1; i <= 4; i++)
-    {
-        s = number_calculate(a, b, i);
-        if (number_equal(&s, n_24p))
-        {
-            string_ans[ans_cnt] = number_print(&s);
-            string_resize(ans_cnt + string_ans);
-            ans_cnt++;
-            ans++;
+#define _check2(a, b, i) s = number_calculate(a, b, i); \
+        if (number_equal(&s, n_24p)) \
+        { \
+            string_ans[ans_cnt] = number_print(&s); \
+            string_resize(ans_cnt + string_ans); \
+            ans_cnt++; \
         }
-    }
-    return ans;
-}
 
-int check3(const Number *a, const Number *b, const Number *c)
+void ckeck2(const Number *a, const Number *b)
 {
     int ans = 0;
+    Number s;
+    _check2(a, b, 1);
+    _check2(a, b, 2);
+    _check2(b, a, 2);
+    _check2(a, b, 3);
+    _check2(a, b, 4);
+    _check2(b, a, 4);
+}
+
+void check3(const Number *a, const Number *b, const Number *c)
+{
     Number s;
     for (int i = 1; i <= 4; i++)
     {
         s = number_calculate(a, b, i);
-        ans += ckeck2(&s, c);
-        ans += ckeck2(c, &s);
+        ckeck2(&s, c);
+        ckeck2(c, &s);
     }
-    return ans;
 }
 
-int check4(const Number *a, const Number *b, const Number *c, const Number *d)
+void check4(const Number *a, const Number *b, const Number *c, const Number *d)
 {
-    int ans = 0;
     Number s;
     for (int i = 1; i <= 4; i++)
     {
         s = number_calculate(a, b, i);
-        ans += check3(&s, c, d);
-        ans += check3(&s, d, c);
-        ans += check3(c, &s, d);
-        ans += check3(d, &s, c);
-        ans += check3(c, d, &s);
-        ans += check3(d, c, &s);
+        check3(&s, c, d);
+        check3(&s, d, c);
+        check3(c, &s, d);
+        check3(d, &s, c);
+        check3(c, d, &s);
+        check3(d, c, &s);
     }
-    return ans;
 }
 
 int main(int argc, char **argv)

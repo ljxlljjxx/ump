@@ -3,3 +3,4 @@ temp/
 ump
 ump_*
 !ump_*.c
+*.py
