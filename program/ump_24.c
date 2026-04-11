@@ -182,9 +182,6 @@ int number_update(Number *n)
         _number_update(&n->second);
         if (!number_compare(n->first.number, n->second.number))
         {
-            debug_number_output(n->first.number, 0);
-            debug_number_output(n->second.number, 0);
-            puts("!!!!change!!!!");
             Number *t = n->first.number;
             n->first.number = n->second.number;
             n->second.number = t;
@@ -334,7 +331,6 @@ int string_cmp(const void *_a, const void *_b)
 #define _check2(a, b, i) s = number_calculate(a, b, i); \
         if (number_equal(&s, n_24p)) \
         { \
-            debug_number_output(&s, 0);\
             string_ans[ans_cnt] = number_print(&s); \
             string_resize(ans_cnt + string_ans); \
             ans_cnt++; \
