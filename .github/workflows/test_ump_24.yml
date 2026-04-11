@@ -72,10 +72,10 @@ jobs:
             $actualOutput = Get-Content $inputFile -Raw | & ./ump_24_windows
             $expectedOutput = Get-Content $expectedFile -Raw
             if ($actualOutput -eq $expectedOutput) {
-              Write-Host "test $i accepted"
+              echo "test $i accepted"
             } else {
-              Write-Host "$actualOutput"
-              Write-Host "test $i unaccepted"
+              echo "$actualOutput"
+              echo "test $i unaccepted"
               exit 1
             }
           }
