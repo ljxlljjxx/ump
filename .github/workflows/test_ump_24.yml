@@ -74,8 +74,8 @@ jobs:
             if ($actualOutput -eq $expectedOutput) {
               echo "test $i accepted"
             } else {
-              echo "$actualOutput"
               echo "test $i unaccepted"
+              echo "$actualOutput"
               exit 1
             }
           }
