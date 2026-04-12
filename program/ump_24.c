@@ -65,7 +65,7 @@ void add_bracket(string *str)
     {
         str->size = len + 2;
         char *new_buf = (char *)malloc(sizeof(char) * str->size);
-        for (int i = 0; i < len-1; i++) new_buf[i+1] = str->buf[i];
+        for (size_t i = 0; i < len-1; i++) new_buf[i+1] = str->buf[i];
         free(str->buf);
         new_buf[0] = '(';
         new_buf[len] = ')';
@@ -293,16 +293,22 @@ void debug_number_output(const Number *a, int deep)
 {
     if (a->op == 0)
     {
-        for (int i = 0; i < deep; i++) putchar(9); printf("op: 0; first: %d\n", a->first.basic);
-        for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
+        for (int i = 0; i < deep; i++) putchar(9);
+        printf("op: 0; first: %d\n", a->first.basic);
+        for (int i = 0; i < deep; i++) putchar(9);
+        printf("result: %lf\n", a->result.value);
         return;
     }
-    for (int i = 0; i < deep; i++) putchar(9); printf("first: %p;\n", a->first.number);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("first: %p;\n", a->first.number);
     debug_number_output(a->first.number, deep + 1);
-    for (int i = 0; i < deep; i++) putchar(9); printf("second: %p;\n", a->second.number);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("second: %p;\n", a->second.number);
     debug_number_output(a->second.number, deep + 1);
-    for (int i = 0; i < deep; i++) putchar(9); printf("op: %d;\n", a->op);
-    for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("op: %d;\n", a->op);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("result: %lf\n", a->result.value);
 }
 
 void debug_string_output(const string *str)
@@ -338,7 +344,6 @@ int string_cmp(const void *_a, const void *_b)
 
 void ckeck2(const Number *a, const Number *b)
 {
-    int ans = 0;
     Number s;
     _check2(a, b, 1);
     _check2(a, b, 2);
@@ -427,7 +432,7 @@ int main(int argc, char **argv)
     qsort(string_ans, ans_cnt, sizeof(*string_ans), string_cmp);
 
     __string_ans[__ans_cnt++] = &string_ans[0];
-    for (int i = 1; i < ans_cnt; i++)
+    for (size_t i = 1; i < ans_cnt; i++)
     {
         if (strcmp(string_ans[i-1].buf, string_ans[i].buf))
             __string_ans[__ans_cnt++] = &string_ans[i];
@@ -438,7 +443,7 @@ int main(int argc, char **argv)
     else
         printf("There are a total of %zd solutions, as follows:\n", __ans_cnt);
 
-    for (int i = 0; i < __ans_cnt; i++)
+    for (size_t i = 0; i < __ans_cnt; i++)
     {
         puts(__string_ans[i]->buf);
     }
