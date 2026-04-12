@@ -66,16 +66,14 @@ jobs:
         run: gcc -Wall -Wextra program/ump_24.c -o ump_24_windows
       - name: Run tests
         run: |
-          for ($i = 1; $i -le 20; $i++) {
-            $inputFile  = "test\test_ump_24\$i.in"
-            $expectedFile = "test\test_ump_24\$i.out"
-            $actualOutput = Get-Content $inputFile -Raw | & ./ump_24_windows
-            $expectedOutput = Get-Content $expectedFile -Raw
-            if ($actualOutput -eq $expectedOutput) {
-              echo "test $i accepted"
-            } else {
-              echo "test $i unaccepted"
-              echo "$actualOutput"
-              exit 1
-            }
-          }
+          bash -c 'for ((i=1; i<=20; i++)); do
+            input="test/test_ump_24/${i}.in"
+            expected="test/test_ump_24/${i}.out"
+            if ./ump_24_macos < "$input" | cmp -s - "$expected"; then
+                echo "test ${i} accepted"
+            else
+                echo "test ${i} unaccepted"
+                echo "$(./ump_24_macos < "$input")"
+                exit 1
+            fi
+            done'
