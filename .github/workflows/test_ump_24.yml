@@ -69,11 +69,11 @@ jobs:
           bash -c 'for ((i=1; i<=20; i++)); do
             input="test/test_ump_24/${i}.in"
             expected="test/test_ump_24/${i}.out"
-            if ./ump_24_macos < "$input" | cmp -s - "$expected"; then
+            if ./ump_24_windows < "$input" | cmp -s - "$expected"; then
                 echo "test ${i} accepted"
             else
                 echo "test ${i} unaccepted"
-                echo "$(./ump_24_macos < "$input")"
+                echo "$(./ump_24_windows < "$input")"
                 exit 1
             fi
             done'
