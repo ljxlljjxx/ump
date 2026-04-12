@@ -65,7 +65,7 @@ void add_bracket(string *str)
     {
         str->size = len + 2;
         char *new_buf = (char *)malloc(sizeof(char) * str->size);
-        for (int i = 0; i < len-1; i++) new_buf[i+1] = str->buf[i];
+        for (size_t i = 0; i < len-1; i++) new_buf[i+1] = str->buf[i];
         free(str->buf);
         new_buf[0] = '(';
         new_buf[len] = ')';
@@ -151,20 +151,21 @@ int _number_update(_Number *n)
 
 int number_same(Number *a, Number *b)
 {
-    return a->op == b->op && a->first.basic == b->first.basic && a->second.basic == b->second.basic;
+    if (a->op == 0) return b->op == 0 && a->first.basic == b->first.basic;
+    return a->op == b->op && number_same(a->first.number, b->first.number) && number_same(a->second.number, b->second.number);
 }
 
 int number_compare(const void *_a, const void *_b)
 {
     const Number *a = (const Number *)_a;
     const Number *b = (const Number *)_b;
-    if (b->op == 0 && a->op == 0) return a->first.basic < b->first.basic;
+    if (b->op == 0 && a->op == 0) return a->first.basic <= b->first.basic;
     if (b->op == 0) return 1;
     if (a->op == 0) return 0;
     if (b->op != a->op) return a->op < b->op;
     if (!number_same(a->first.number, b->first.number)) return number_compare(a->first.number, b->first.number);
     if (!number_same(a->second.number, b->second.number)) return number_compare(a->second.number, b->second.number);
-    return 0;
+    return 1;
 }
 
 int number_update(Number *n)
@@ -215,8 +216,10 @@ int number_update(Number *n)
         n->result.value =  n->first.number->result.value;
         if (n->second.number->result.value)
             n->result.value /= n->second.number->result.value;
-        else
+        else if (n->first.number->result.value)
             n->result.value = INFINITY;
+        else
+            n->result.value = NAN;
         break;
     
     default:
@@ -290,16 +293,22 @@ void debug_number_output(const Number *a, int deep)
 {
     if (a->op == 0)
     {
-        for (int i = 0; i < deep; i++) putchar(9); printf("op: 0; first: %d\n", a->first.basic);
-        for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
+        for (int i = 0; i < deep; i++) putchar(9);
+        printf("op: 0; first: %d\n", a->first.basic);
+        for (int i = 0; i < deep; i++) putchar(9);
+        printf("result: %lf\n", a->result.value);
         return;
     }
-    for (int i = 0; i < deep; i++) putchar(9); printf("first: %p;\n", a->first.number);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("first: %p;\n", a->first.number);
     debug_number_output(a->first.number, deep + 1);
-    for (int i = 0; i < deep; i++) putchar(9); printf("second: %p;\n", a->second.number);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("second: %p;\n", a->second.number);
     debug_number_output(a->second.number, deep + 1);
-    for (int i = 0; i < deep; i++) putchar(9); printf("op: %d;\n", a->op);
-    for (int i = 0; i < deep; i++) putchar(9); printf("result: %lf\n", a->result.value);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("op: %d;\n", a->op);
+    for (int i = 0; i < deep; i++) putchar(9);
+    printf("result: %lf\n", a->result.value);
 }
 
 void debug_string_output(const string *str)
@@ -325,52 +334,49 @@ int string_cmp(const void *_a, const void *_b)
     return strcmp(abuf, bbuf);
 }
 
-int ckeck2(const Number *a, const Number *b)
-{
-    int ans = 0;
-    Number s;
-    for (int i = 1; i <= 4; i++)
-    {
-        s = number_calculate(a, b, i);
-        if (number_equal(&s, n_24p))
-        {
-            string_ans[ans_cnt] = number_print(&s);
-            string_resize(ans_cnt + string_ans);
-            ans_cnt++;
-            ans++;
+#define _check2(a, b, i) s = number_calculate(a, b, i); \
+        if (number_equal(&s, n_24p)) \
+        { \
+            string_ans[ans_cnt] = number_print(&s); \
+            string_resize(ans_cnt + string_ans); \
+            ans_cnt++; \
         }
-    }
-    return ans;
+
+void ckeck2(const Number *a, const Number *b)
+{
+    Number s;
+    _check2(a, b, 1);
+    _check2(a, b, 2);
+    _check2(b, a, 2);
+    _check2(a, b, 3);
+    _check2(a, b, 4);
+    _check2(b, a, 4);
 }
 
-int check3(const Number *a, const Number *b, const Number *c)
+void check3(const Number *a, const Number *b, const Number *c)
 {
-    int ans = 0;
     Number s;
     for (int i = 1; i <= 4; i++)
     {
         s = number_calculate(a, b, i);
-        ans += ckeck2(&s, c);
-        ans += ckeck2(c, &s);
+        ckeck2(&s, c);
+        ckeck2(c, &s);
     }
-    return ans;
 }
 
-int check4(const Number *a, const Number *b, const Number *c, const Number *d)
+void check4(const Number *a, const Number *b, const Number *c, const Number *d)
 {
-    int ans = 0;
     Number s;
     for (int i = 1; i <= 4; i++)
     {
         s = number_calculate(a, b, i);
-        ans += check3(&s, c, d);
-        ans += check3(&s, d, c);
-        ans += check3(c, &s, d);
-        ans += check3(d, &s, c);
-        ans += check3(c, d, &s);
-        ans += check3(d, c, &s);
+        check3(&s, c, d);
+        check3(&s, d, c);
+        check3(c, &s, d);
+        check3(d, &s, c);
+        check3(c, d, &s);
+        check3(d, c, &s);
     }
-    return ans;
 }
 
 int main(int argc, char **argv)
@@ -426,7 +432,7 @@ int main(int argc, char **argv)
     qsort(string_ans, ans_cnt, sizeof(*string_ans), string_cmp);
 
     __string_ans[__ans_cnt++] = &string_ans[0];
-    for (int i = 1; i < ans_cnt; i++)
+    for (size_t i = 1; i < ans_cnt; i++)
     {
         if (strcmp(string_ans[i-1].buf, string_ans[i].buf))
             __string_ans[__ans_cnt++] = &string_ans[i];
@@ -437,7 +443,7 @@ int main(int argc, char **argv)
     else
         printf("There are a total of %zd solutions, as follows:\n", __ans_cnt);
 
-    for (int i = 0; i < __ans_cnt; i++)
+    for (size_t i = 0; i < __ans_cnt; i++)
     {
         puts(__string_ans[i]->buf);
     }
