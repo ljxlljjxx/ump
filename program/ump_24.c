@@ -91,9 +91,11 @@ struct ResultType
 
 const ResultType rt_24 = {24};
 
+#define double_equal(a, b) (fabs((a) - (b)) <= 1e-6)
+
 int result_equal(const ResultType *a, const ResultType *b)
 {
-    return a->value == b->value;
+    return double_equal(a->value, b->value);
 }
 
 struct Number
