@@ -1,6 +1,5 @@
 temp/
 .DS_Store
-ump
-ump_*
-!ump_*.c
 *.py
+ump_decryption.c
+ump_encryption.c

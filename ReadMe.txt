@@ -37,6 +37,32 @@ ump介绍
 	用法2: ump_24, 然后再输入a b c d(a, b, c, d表示4个整数)
 	该文件用来算24点。
 
+10. ump_encryption: 加密
+	用法: ump_encryption 文件
+	参数:
+		-s [str]
+			设置密码
+		-inplace
+			在原地修改 (默认为储存到文件which文件名为原文件名+.out)
+		-suffix [str]
+			自定义保存文件后缀
+		-prefix [str]
+			自定义保存文件前缀
+	用来加密文件(不安全)
+
+11. ump_decryption: 加密
+	用法: ump_decryption 文件
+	参数:
+		-s [str]
+			设置密码
+		-inplace
+			在原地修改 (默认为储存到文件which文件名为原文件名+.out)
+		-suffix [str]
+			自定义保存文件后缀
+		-prefix [str]
+			自定义保存文件前缀
+	用来解密文件(若未输入密码则报错)
+
 
 注: 若提示没有文件，则需:
 gcc program/ump.c -o ump -O3 -std=c99
@@ -45,6 +71,7 @@ gcc program/ump_ccsie.c -o ump_ccsie -O3 -std=c99
 gcc program/ump_dls.c -o ump_dls -O3 -std=c99
 gcc program/ump_drls.c -o ump_drls -O3 -std=c99
 gcc program/ump_drs.c -o ump_drs -O3 -std=c99
-gcc program/ump_jm.c -o ump_jm -O3 -std=c99
 gcc program/ump_mw.c -o ump_mw -O3 -std=c99
 gcc program/ump_sudoku.c -o ump_sudoku -O3 -std=c99
+gcc program/ump_encryption.c -o ump_encryption -O3 -std=c99
+gcc program/ump_decryption.c -o ump_decryption -O3 -std=c99
