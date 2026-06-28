@@ -63,6 +63,10 @@ ump介绍
 			自定义保存文件前缀
 	用来解密文件(若未输入密码则报错)
 
+12. ump_dsmd: 把deepseek markdown换成普通markdown
+	用法: ump_dsmd file ...
+	该文件用来把deepseek markdown换成普通markdown。
+
 
 注: 若提示没有文件，则需:
 gcc program/ump.c -o ump -O3 -std=c99
@@ -75,3 +79,4 @@ gcc program/ump_mw.c -o ump_mw -O3 -std=c99
 gcc program/ump_sudoku.c -o ump_sudoku -O3 -std=c99
 gcc program/ump_encryption.c -o ump_encryption -O3 -std=c99
 gcc program/ump_decryption.c -o ump_decryption -O3 -std=c99
+gcc program/ump_dsmd.c -o ump_dsmd -O3 -std=c99
